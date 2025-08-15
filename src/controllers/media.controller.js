@@ -6,6 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import crypto from "crypto";
 
+//this method is used to upload the media to the cloudinary
 const uploadMedia = asyncHandler(async (req, res) => {
     const { title, type } = req.body;
 
@@ -53,6 +54,7 @@ const uploadMedia = asyncHandler(async (req, res) => {
     );
 });
 
+//this method is used to generate a stream url for the media
 const generateStreamUrl = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -83,7 +85,7 @@ const generateStreamUrl = asyncHandler(async (req, res) => {
 
     // Generate secure streaming URL (valid for 10 minutes)
     const expirationTime = Math.floor(Date.now() / 1000) + (10 * 60); // 10 minutes from now
-    const secretKey = process.env.STREAM_SECRET || 'default-stream-secret';
+    const secretKey = process.env.STREAM_SECRET;
 
     // Create signature for the URL
     const dataToSign = `${mediaAsset._id}${expirationTime}${clientIP}`;
@@ -93,7 +95,7 @@ const generateStreamUrl = asyncHandler(async (req, res) => {
         .digest('hex');
 
     // Construct secure streaming URL
-    const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+    const baseUrl = 'http://localhost:8000';
     const streamUrl = `${baseUrl}/api/v1/media/stream/${mediaAsset._id}?exp=${expirationTime}&sig=${signature}&ip=${encodeURIComponent(clientIP)}`;
 
     return res.status(200).json(
@@ -109,6 +111,7 @@ const generateStreamUrl = asyncHandler(async (req, res) => {
     );
 });
 
+//this method is used to stream the media
 const streamMedia = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { exp, sig, ip } = req.query;
@@ -124,7 +127,7 @@ const streamMedia = asyncHandler(async (req, res) => {
     }
 
     // Verify signature
-    const secretKey = process.env.STREAM_SECRET || 'default-stream-secret';
+    const secretKey = process.env.STREAM_SECRET;
     const dataToSign = `${id}${exp}${decodeURIComponent(ip)}`;
     const expectedSignature = crypto
         .createHmac('sha256', secretKey)
@@ -146,6 +149,7 @@ const streamMedia = asyncHandler(async (req, res) => {
     return res.redirect(mediaAsset.file_url);
 });
 
+//this method is used to log the media view
 const logMediaView = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
@@ -187,6 +191,7 @@ const logMediaView = asyncHandler(async (req, res) => {
     );
 });
 
+//this method is used to get the media analytics
 const getMediaAnalytics = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
