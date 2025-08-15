@@ -1,0 +1,1 @@
+This is a backend project using Javascript, Nodejs, Expressjs and MongoDB
