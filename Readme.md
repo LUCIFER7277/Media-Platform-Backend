@@ -169,11 +169,11 @@ This starts:
 ```
 src/
 ├── controllers/     # Business logic
-├── models/         # Database schemas
-├── routes/         # API endpoints
-├── middlewares/    # Auth, rate limiting, etc.
-├── utils/          # Helper functions
-└── db/            # Database connection
+├── models/          # Database schemas
+├── routes/          # API endpoints
+├── middlewares/     # Auth, rate limiting, etc.
+├── utils/           # Helper functions
+└── db/              # Database connection
 
 tests/              # Test suites
 ```

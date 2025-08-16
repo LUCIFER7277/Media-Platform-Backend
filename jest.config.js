@@ -1,15 +1,10 @@
 export default {
     testEnvironment: 'node',
-    transform: {},
-    extensionsToTreatAsEsm: ['.js'],
-    globals: {
-        'ts-jest': {
-            useESM: true
-        }
-    },
-    moduleNameMapping: {
+    testTimeout: 30000,
+    moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1'
     },
+    transform: {},
     collectCoverage: true,
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'html'],

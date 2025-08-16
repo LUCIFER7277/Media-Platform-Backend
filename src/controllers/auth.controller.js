@@ -26,6 +26,12 @@ const signupAdmin = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Email and password are required");
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        throw new ApiError(400, "Please provide a valid email address");
+    }
+
     // Check if admin already exists
     const existedAdmin = await AdminUser.findOne({ email });
 
@@ -55,8 +61,8 @@ const signupAdmin = asyncHandler(async (req, res) => {
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    if (!email) {
-        throw new ApiError(400, "Email is required");
+    if (!email || !password) {
+        throw new ApiError(400, "Email and password are required");
     }
 
     // Find admin user

@@ -17,6 +17,7 @@ app.use(cookieParser());
 // routes import 
 import authRouter from "./routes/auth.routes.js";
 import mediaRouter from "./routes/media.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -32,5 +33,7 @@ app.get('/health', (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/media", mediaRouter);
 
+// Global error handler (must be after routes)
+app.use(errorHandler);
 
 export { app };  
