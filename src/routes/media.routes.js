@@ -8,11 +8,13 @@ import {
 } from "../controllers/media.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { viewRateLimit, uploadRateLimit } from "../middlewares/rateLimiter.middleware.js";
 
 const router = Router();
 
-// Media upload route (authenticated)
+// Media upload route (authenticated + rate limited)
 router.route("/").post(
+    uploadRateLimit,
     verifyJWT,
     upload.single("media"),
     uploadMedia
@@ -21,8 +23,8 @@ router.route("/").post(
 // Generate secure streaming URL (authenticated)
 router.route("/:id/stream-url").get(verifyJWT, generateStreamUrl);
 
-// Log media view (authenticated)
-router.route("/:id/view").post(verifyJWT, logMediaView);
+// Log media view (authenticated + rate limited)
+router.route("/:id/view").post(viewRateLimit, verifyJWT, logMediaView);
 
 // Get media analytics (authenticated)
 router.route("/:id/analytics").get(verifyJWT, getMediaAnalytics);

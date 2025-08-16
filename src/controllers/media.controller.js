@@ -4,6 +4,7 @@ import { MediaAsset } from "../models/mediaAsset.model.js";
 import { MediaViewLog } from "../models/mediaViewLog.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { redisCache } from "../utils/redis.js";
 import crypto from "crypto";
 
 //this method is used to upload the media to the cloudinary
@@ -199,6 +200,17 @@ const getMediaAnalytics = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Media ID is required");
     }
 
+    // Check cache first
+    const cacheKey = `analytics:${id}`;
+    const cachedData = await redisCache.get(cacheKey);
+
+    if (cachedData) {
+        console.log('📦 Analytics served from cache');
+        return res.status(200).json(
+            new ApiResponse(200, cachedData, "Media analytics retrieved from cache")
+        );
+    }
+
     // Check if media exists
     const mediaAsset = await MediaAsset.findById(id);
 
@@ -207,6 +219,8 @@ const getMediaAnalytics = asyncHandler(async (req, res) => {
     }
 
     try {
+        console.log('🔄 Calculating analytics from database...');
+
         // Get total views
         const totalViews = await MediaViewLog.countDocuments({ media_id: id });
 
@@ -258,6 +272,10 @@ const getMediaAnalytics = asyncHandler(async (req, res) => {
                 created_at: mediaAsset.createdAt
             }
         };
+
+        // Cache the result for 5 minutes
+        await redisCache.set(cacheKey, analytics, 300);
+        console.log('💾 Analytics cached for 5 minutes');
 
         return res.status(200).json(
             new ApiResponse(200, analytics, "Media analytics retrieved successfully")

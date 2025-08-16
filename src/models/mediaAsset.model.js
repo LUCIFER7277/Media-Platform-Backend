@@ -21,6 +21,11 @@ const mediaAssetSchema = new Schema(
         public_id: {
             type: String,
             required: true
+        },
+        uploaded_by: {
+            type: Schema.Types.ObjectId,
+            ref: "AdminUser",
+            required: true
         }
     },
     {
